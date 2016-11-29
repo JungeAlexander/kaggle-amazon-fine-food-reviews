@@ -11760,7 +11760,10 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>GitHub repository with this analysis: <a href="https://github.com/JungeAlexander/kaggle-amazon-fine-food-reviews">https://github.com/JungeAlexander/kaggle-amazon-fine-food-reviews</a></p>
+<p>Analysis of the <a href="https://www.kaggle.com/snap/amazon-fine-food-reviews">Amazon Fine Food Reviews dataset on Kaggle</a>.
+GitHub repository with this analysis: <a href="https://github.com/JungeAlexander/kaggle-amazon-fine-food-reviews">https://github.com/JungeAlexander/kaggle-amazon-fine-food-reviews</a></p>
+<p>The goal of the analysis is to classify positive (4-5 stars) and negative (1-2 stars) reviews based on the
+review content.</p>
 <p>Some inspiration can be found here:</p>
 <ul>
 <li><a href="https://www.kaggle.com/c/word2vec-nlp-tutorial">https://www.kaggle.com/c/word2vec-nlp-tutorial</a></li>
@@ -11773,13 +11776,45 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="k">import</span> <span class="n">stopwords</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="c1">#from sklearn import</span>
 <span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the punkt tokenizer used for splitting reviews into sentences</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;tokenizers/punkt/english.pickle&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -11799,7 +11834,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;../input/database.sqlite&#39;</span><span class="p">)</span>
@@ -11813,7 +11848,270 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="s1">&#39;Score&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f2fc865e5f8&gt;]], dtype=object)</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We observe that the data set is heavily biased towards reviews with a score of 5.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;Score&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span>
@@ -11826,7 +12124,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -11840,7 +12138,7 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -11907,14 +12205,14 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Split-into-training-and-test-sets">Split into training and test sets<a class="anchor-link" href="#Split-into-training-and-test-sets">&#182;</a></h2><p>Split the data set into training and test sets. To ensure indendence of training and test set and generalizability of the model, make sure that no product (identified by <code>ProductId</code>) and no user (identified by <code>UserId</code>) is present in both training and test set.</p>
-<p>This is implemented by first sorting the data set by <code>ProductId</code>, splitting into equally sized training and test set (no shuffling!) and lastly removing any review from the test set where either user or product ID also appears in the training set. Of course, this will make the training and test sets unequally sized but ¯\__(ツ)__/¯</p>
+<p>This is implemented by first sorting the data set by <code>ProductId</code>, splitting into equally sized training and test set (no shuffling!) and lastly removing any reviews from the test set where either user or product ID also appears in the training set. Of course, this will make the training and test sets unequally sized but ¯\__(ツ)__/¯</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;ProductId&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -11927,7 +12225,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">reviews</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
@@ -11942,7 +12240,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_remove</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">[</span><span class="s1">&#39;ProductId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;ProductId&#39;</span><span class="p">]),</span>
@@ -11957,11 +12255,11 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training set contains </span><span class="si">{:d}</span><span class="s1"> reviews.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">)))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test set contains </span><span class="si">{:d}</span><span class="s1"> reviews (</span><span class="si">{:d}</span><span class="s1"> removed)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="n">test_remove</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test set contains </span><span class="si">{:d}</span><span class="s1"> reviews (</span><span class="si">{:d}</span><span class="s1"> removed).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="n">test_remove</span><span class="p">)))</span>
 </pre></div>
 
 </div>
@@ -11975,7 +12273,38 @@ div#notebook {
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Training set contains 262907 reviews.
-Test set contains 151198 reviews (111709 removed)
+Test set contains 151198 reviews (111709 removed).
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_pos_train</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training set contains </span><span class="si">{:.2%}</span><span class="s1"> positive reviews&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_pos_train</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">)))</span>
+<span class="n">n_pos_test</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test set contains </span><span class="si">{:.2%}</span><span class="s1"> positive reviews&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_pos_test</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">)))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training set contains 84.93% positive reviews
+Test set contains 82.37% positive reviews
 </pre>
 </div>
 </div>
@@ -11989,14 +12318,413 @@ Test set contains 151198 reviews (111709 removed)
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Preparing-review-text">Preparing review text<a class="anchor-link" href="#Preparing-review-text">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Convert each review in the training set to a list of sentences where each sentence is in turn a list of words.
+Besides splitting reviews into sentences, non-letters and (optionally) stop words are removed and all words
+coverted to lower case.</p>
+<p>Inspired by: <a href="https://www.kaggle.com/c/word2vec-nlp-tutorial/details/part-2-word-vectors">https://www.kaggle.com/c/word2vec-nlp-tutorial/details/part-2-word-vectors</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">review_to_wordlist</span><span class="p">(</span> <span class="n">review</span><span class="p">,</span> <span class="n">remove_stopwords</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a review to a list of words. Removal of stop words is optional.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># remove non-letters</span>
+    <span class="n">review_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[^a-zA-Z]&quot;</span><span class="p">,</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">review</span><span class="p">)</span>
+    
+    <span class="c1"># convert to lower case and split at whitespace</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">review_text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    
+    <span class="c1"># remove stop words (false by default)</span>
+    <span class="k">if</span> <span class="n">remove_stopwords</span><span class="p">:</span>
+        <span class="n">stops</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s2">&quot;english&quot;</span><span class="p">))</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">stops</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">words</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">review_to_sentences</span><span class="p">(</span> <span class="n">review</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">remove_stopwords</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split review into list of sentences where each sentence is a list of words.</span>
+<span class="sd">    Removal of stop words is optional.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># use the NLTK tokenizer to split the paragraph into sentences</span>
+    <span class="n">raw_sentences</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">review</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+    <span class="c1"># each sentence is furthermore split into words</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="k">for</span> <span class="n">raw_sentence</span> <span class="ow">in</span> <span class="n">raw_sentences</span><span class="p">:</span>
+        <span class="c1"># If a sentence is empty, skip it</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_sentence</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sentences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">review_to_wordlist</span><span class="p">(</span><span class="n">raw_sentence</span><span class="p">,</span> <span class="n">remove_stopwords</span><span class="p">))</span>
+            
+    <span class="k">return</span> <span class="n">sentences</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_sentences</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Initialize an empty list of sentences</span>
+<span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;Text&#39;</span><span class="p">]):</span>
+    <span class="n">train_sentences</span> <span class="o">+=</span> <span class="n">review_to_sentences</span><span class="p">(</span><span class="n">review</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 262907/262907 [01:30&lt;00:00, 2910.75it/s]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_sentences</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;this&#39;,
+ &#39;witty&#39;,
+ &#39;little&#39;,
+ &#39;book&#39;,
+ &#39;makes&#39;,
+ &#39;my&#39;,
+ &#39;son&#39;,
+ &#39;laugh&#39;,
+ &#39;at&#39;,
+ &#39;loud&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="TODO">TODO<a class="anchor-link" href="#TODO">&#182;</a></h1><ul>
-<li>check class proportions in train and test set</li>
 <li>train word embedding</li>
+<li>Look at a couple of examples</li>
 <li>classify</li>
 </ul>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Import the built-in logging module and configure it so that Word2Vec </span>
+<span class="c1"># creates nice output messages</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> : </span><span class="si">%(levelname)s</span><span class="s1"> : </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>\
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="c1"># Set values for various parameters</span>
+<span class="n">num_features</span> <span class="o">=</span> <span class="mi">300</span>    <span class="c1"># Word vector dimensionality                      </span>
+<span class="n">min_word_count</span> <span class="o">=</span> <span class="mi">40</span>   <span class="c1"># Minimum word count                        </span>
+<span class="n">num_workers</span> <span class="o">=</span> <span class="mi">2</span>       <span class="c1"># Number of threads to run in parallel</span>
+<span class="n">context</span> <span class="o">=</span> <span class="mi">10</span>          <span class="c1"># Context window size                                                                                    </span>
+<span class="n">downsampling</span> <span class="o">=</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">3</span>   <span class="c1"># Downsample setting for frequent words</span>
+
+<span class="c1"># Initialize and train the model (this will take some time)</span>
+<span class="kn">from</span> <span class="nn">gensim.models</span> <span class="k">import</span> <span class="n">word2vec</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">word2vec</span><span class="o">.</span><span class="n">Word2Vec</span><span class="p">(</span><span class="n">train_sentences</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> \
+            <span class="n">size</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">min_count</span> <span class="o">=</span> <span class="n">min_word_count</span><span class="p">,</span> \
+            <span class="n">window</span> <span class="o">=</span> <span class="n">context</span><span class="p">,</span> <span class="n">sample</span> <span class="o">=</span> <span class="n">downsampling</span><span class="p">)</span>
+
+<span class="c1"># If you don&#39;t plan to train the model any further, calling </span>
+<span class="c1"># init_sims will make the model much more memory-efficient.</span>
+<span class="n">model</span><span class="o">.</span><span class="n">init_sims</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># It can be helpful to create a meaningful model name and </span>
+<span class="c1"># save the model for later use. You can load it later using Word2Vec.load()</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;train_model&quot;</span>
+<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>2016-11-29 22:05:28,655 : INFO : Pattern library is not installed, lemmatization won&#39;t be available.
+2016-11-29 22:05:28,691 : INFO : Could not import Theano, will use standard float for default ShardedCorpus dtype.
+2016-11-29 22:05:28,924 : INFO : &#39;pattern&#39; package not found; tag filters are not available for English
+2016-11-29 22:05:28,943 : INFO : collecting all words and their counts
+2016-11-29 22:05:28,945 : INFO : PROGRESS: at sentence #0, processed 0 words, keeping 0 word types
+2016-11-29 22:05:29,003 : INFO : PROGRESS: at sentence #10000, processed 180428 words, keeping 8069 word types
+2016-11-29 22:05:29,062 : INFO : PROGRESS: at sentence #20000, processed 359188 words, keeping 11891 word types
+2016-11-29 22:05:29,120 : INFO : PROGRESS: at sentence #30000, processed 524070 words, keeping 15515 word types
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training model...
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>2016-11-29 22:05:29,177 : INFO : PROGRESS: at sentence #40000, processed 680380 words, keeping 17879 word types
+2016-11-29 22:05:29,235 : INFO : PROGRESS: at sentence #50000, processed 842552 words, keeping 20707 word types
+2016-11-29 22:05:29,294 : INFO : PROGRESS: at sentence #60000, processed 1004577 words, keeping 22649 word types
+2016-11-29 22:05:29,352 : INFO : PROGRESS: at sentence #70000, processed 1167004 words, keeping 24754 word types
+2016-11-29 22:05:29,406 : INFO : PROGRESS: at sentence #80000, processed 1320862 words, keeping 25385 word types
+2016-11-29 22:05:29,470 : INFO : PROGRESS: at sentence #90000, processed 1490399 words, keeping 26728 word types
+2016-11-29 22:05:29,537 : INFO : PROGRESS: at sentence #100000, processed 1652964 words, keeping 27605 word types
+2016-11-29 22:05:29,594 : INFO : PROGRESS: at sentence #110000, processed 1820823 words, keeping 28651 word types
+2016-11-29 22:05:29,656 : INFO : PROGRESS: at sentence #120000, processed 1995726 words, keeping 30232 word types
+2016-11-29 22:05:29,713 : INFO : PROGRESS: at sentence #130000, processed 2162244 words, keeping 31400 word types
+2016-11-29 22:05:29,771 : INFO : PROGRESS: at sentence #140000, processed 2330605 words, keeping 32324 word types
+2016-11-29 22:05:29,829 : INFO : PROGRESS: at sentence #150000, processed 2497196 words, keeping 33059 word types
+2016-11-29 22:05:29,880 : INFO : PROGRESS: at sentence #160000, processed 2657117 words, keeping 33871 word types
+2016-11-29 22:05:29,936 : INFO : PROGRESS: at sentence #170000, processed 2816870 words, keeping 34759 word types
+2016-11-29 22:05:29,998 : INFO : PROGRESS: at sentence #180000, processed 2981871 words, keeping 35634 word types
+2016-11-29 22:05:30,062 : INFO : PROGRESS: at sentence #190000, processed 3159640 words, keeping 36318 word types
+2016-11-29 22:05:30,129 : INFO : PROGRESS: at sentence #200000, processed 3328868 words, keeping 37267 word types
+2016-11-29 22:05:30,187 : INFO : PROGRESS: at sentence #210000, processed 3487336 words, keeping 37910 word types
+2016-11-29 22:05:30,243 : INFO : PROGRESS: at sentence #220000, processed 3645618 words, keeping 38757 word types
+2016-11-29 22:05:30,300 : INFO : PROGRESS: at sentence #230000, processed 3804465 words, keeping 39479 word types
+2016-11-29 22:05:30,354 : INFO : PROGRESS: at sentence #240000, processed 3965130 words, keeping 39655 word types
+2016-11-29 22:05:30,412 : INFO : PROGRESS: at sentence #250000, processed 4124553 words, keeping 39661 word types
+2016-11-29 22:05:30,481 : INFO : PROGRESS: at sentence #260000, processed 4284220 words, keeping 40104 word types
+2016-11-29 22:05:30,577 : INFO : PROGRESS: at sentence #270000, processed 4442962 words, keeping 40692 word types
+2016-11-29 22:05:30,678 : INFO : PROGRESS: at sentence #280000, processed 4599727 words, keeping 41115 word types
+2016-11-29 22:05:30,790 : INFO : PROGRESS: at sentence #290000, processed 4760344 words, keeping 41816 word types
+2016-11-29 22:05:30,876 : INFO : PROGRESS: at sentence #300000, processed 4922629 words, keeping 42359 word types
+2016-11-29 22:05:30,939 : INFO : PROGRESS: at sentence #310000, processed 5079635 words, keeping 42906 word types
+2016-11-29 22:05:30,997 : INFO : PROGRESS: at sentence #320000, processed 5237498 words, keeping 43677 word types
+2016-11-29 22:05:31,054 : INFO : PROGRESS: at sentence #330000, processed 5394753 words, keeping 44185 word types
+2016-11-29 22:05:31,114 : INFO : PROGRESS: at sentence #340000, processed 5552023 words, keeping 44461 word types
+2016-11-29 22:05:31,173 : INFO : PROGRESS: at sentence #350000, processed 5703169 words, keeping 44888 word types
+2016-11-29 22:05:31,221 : INFO : PROGRESS: at sentence #360000, processed 5853108 words, keeping 45369 word types
+2016-11-29 22:05:31,279 : INFO : PROGRESS: at sentence #370000, processed 6010727 words, keeping 46014 word types
+2016-11-29 22:05:31,338 : INFO : PROGRESS: at sentence #380000, processed 6172789 words, keeping 46661 word types
+2016-11-29 22:05:31,398 : INFO : PROGRESS: at sentence #390000, processed 6337696 words, keeping 47259 word types
+2016-11-29 22:05:31,451 : INFO : PROGRESS: at sentence #400000, processed 6494452 words, keeping 47666 word types
+2016-11-29 22:05:31,515 : INFO : PROGRESS: at sentence #410000, processed 6652355 words, keeping 48283 word types
+2016-11-29 22:05:31,575 : INFO : PROGRESS: at sentence #420000, processed 6815199 words, keeping 48806 word types
+2016-11-29 22:05:31,626 : INFO : PROGRESS: at sentence #430000, processed 6971053 words, keeping 49371 word types
+2016-11-29 22:05:31,688 : INFO : PROGRESS: at sentence #440000, processed 7125020 words, keeping 49626 word types
+2016-11-29 22:05:31,744 : INFO : PROGRESS: at sentence #450000, processed 7279040 words, keeping 50019 word types
+2016-11-29 22:05:31,805 : INFO : PROGRESS: at sentence #460000, processed 7431507 words, keeping 50333 word types
+2016-11-29 22:05:31,864 : INFO : PROGRESS: at sentence #470000, processed 7587748 words, keeping 50771 word types
+2016-11-29 22:05:31,921 : INFO : PROGRESS: at sentence #480000, processed 7747819 words, keeping 51246 word types
+2016-11-29 22:05:31,984 : INFO : PROGRESS: at sentence #490000, processed 7909136 words, keeping 51499 word types
+2016-11-29 22:05:32,046 : INFO : PROGRESS: at sentence #500000, processed 8067395 words, keeping 51968 word types
+2016-11-29 22:05:32,104 : INFO : PROGRESS: at sentence #510000, processed 8223527 words, keeping 52403 word types
+2016-11-29 22:05:32,155 : INFO : PROGRESS: at sentence #520000, processed 8378958 words, keeping 52829 word types
+2016-11-29 22:05:32,225 : INFO : PROGRESS: at sentence #530000, processed 8537773 words, keeping 53394 word types
+2016-11-29 22:05:32,282 : INFO : PROGRESS: at sentence #540000, processed 8690398 words, keeping 53779 word types
+2016-11-29 22:05:32,334 : INFO : PROGRESS: at sentence #550000, processed 8842053 words, keeping 54215 word types
+2016-11-29 22:05:32,394 : INFO : PROGRESS: at sentence #560000, processed 9004279 words, keeping 54913 word types
+2016-11-29 22:05:32,451 : INFO : PROGRESS: at sentence #570000, processed 9164023 words, keeping 55335 word types
+2016-11-29 22:05:32,517 : INFO : PROGRESS: at sentence #580000, processed 9330192 words, keeping 55887 word types
+2016-11-29 22:05:32,580 : INFO : PROGRESS: at sentence #590000, processed 9494137 words, keeping 56239 word types
+2016-11-29 22:05:32,634 : INFO : PROGRESS: at sentence #600000, processed 9652921 words, keeping 56548 word types
+2016-11-29 22:05:32,697 : INFO : PROGRESS: at sentence #610000, processed 9809724 words, keeping 56887 word types
+2016-11-29 22:05:32,759 : INFO : PROGRESS: at sentence #620000, processed 9969697 words, keeping 57308 word types
+2016-11-29 22:05:32,811 : INFO : PROGRESS: at sentence #630000, processed 10131795 words, keeping 57999 word types
+2016-11-29 22:05:32,876 : INFO : PROGRESS: at sentence #640000, processed 10295238 words, keeping 58537 word types
+2016-11-29 22:05:32,937 : INFO : PROGRESS: at sentence #650000, processed 10455800 words, keeping 59002 word types
+2016-11-29 22:05:32,998 : INFO : PROGRESS: at sentence #660000, processed 10612501 words, keeping 59491 word types
+2016-11-29 22:05:33,053 : INFO : PROGRESS: at sentence #670000, processed 10767283 words, keeping 60005 word types
+2016-11-29 22:05:33,120 : INFO : PROGRESS: at sentence #680000, processed 10933050 words, keeping 60534 word types
+2016-11-29 22:05:33,173 : INFO : PROGRESS: at sentence #690000, processed 11091575 words, keeping 60917 word types
+2016-11-29 22:05:33,239 : INFO : PROGRESS: at sentence #700000, processed 11251827 words, keeping 61285 word types
+2016-11-29 22:05:33,294 : INFO : PROGRESS: at sentence #710000, processed 11412990 words, keeping 61519 word types
+2016-11-29 22:05:33,354 : INFO : PROGRESS: at sentence #720000, processed 11568608 words, keeping 61975 word types
+2016-11-29 22:05:33,412 : INFO : PROGRESS: at sentence #730000, processed 11729893 words, keeping 62473 word types
+2016-11-29 22:05:33,478 : INFO : PROGRESS: at sentence #740000, processed 11888227 words, keeping 62950 word types
+2016-11-29 22:05:33,538 : INFO : PROGRESS: at sentence #750000, processed 12045035 words, keeping 63372 word types
+2016-11-29 22:05:33,604 : INFO : PROGRESS: at sentence #760000, processed 12207760 words, keeping 63731 word types
+2016-11-29 22:05:33,670 : INFO : PROGRESS: at sentence #770000, processed 12367459 words, keeping 64261 word types
+2016-11-29 22:05:33,734 : INFO : PROGRESS: at sentence #780000, processed 12540406 words, keeping 64548 word types
+2016-11-29 22:05:33,803 : INFO : PROGRESS: at sentence #790000, processed 12714651 words, keeping 64963 word types
+2016-11-29 22:05:33,870 : INFO : PROGRESS: at sentence #800000, processed 12909315 words, keeping 65190 word types
+2016-11-29 22:05:33,941 : INFO : PROGRESS: at sentence #810000, processed 13102866 words, keeping 65307 word types
+2016-11-29 22:05:34,001 : INFO : PROGRESS: at sentence #820000, processed 13265784 words, keeping 65637 word types
+2016-11-29 22:05:34,063 : INFO : PROGRESS: at sentence #830000, processed 13425109 words, keeping 66033 word types
+2016-11-29 22:05:34,114 : INFO : PROGRESS: at sentence #840000, processed 13583257 words, keeping 66253 word types
+2016-11-29 22:05:34,192 : INFO : PROGRESS: at sentence #850000, processed 13750179 words, keeping 66673 word types
+2016-11-29 22:05:34,251 : INFO : PROGRESS: at sentence #860000, processed 13912689 words, keeping 66960 word types
+2016-11-29 22:05:34,315 : INFO : PROGRESS: at sentence #870000, processed 14080276 words, keeping 67276 word types
+2016-11-29 22:05:34,377 : INFO : PROGRESS: at sentence #880000, processed 14253592 words, keeping 67585 word types
+2016-11-29 22:05:34,441 : INFO : PROGRESS: at sentence #890000, processed 14425242 words, keeping 67695 word types
+2016-11-29 22:05:34,507 : INFO : PROGRESS: at sentence #900000, processed 14584406 words, keeping 67902 word types
+2016-11-29 22:05:34,570 : INFO : PROGRESS: at sentence #910000, processed 14752165 words, keeping 68090 word types
+2016-11-29 22:05:34,641 : INFO : PROGRESS: at sentence #920000, processed 14922356 words, keeping 68452 word types
+2016-11-29 22:05:34,696 : INFO : PROGRESS: at sentence #930000, processed 15078725 words, keeping 68823 word types
+2016-11-29 22:05:34,767 : INFO : PROGRESS: at sentence #940000, processed 15234489 words, keeping 69234 word types
+2016-11-29 22:05:34,836 : INFO : PROGRESS: at sentence #950000, processed 15397711 words, keeping 69630 word types
+2016-11-29 22:05:34,892 : INFO : PROGRESS: at sentence #960000, processed 15555781 words, keeping 70069 word types
+2016-11-29 22:05:34,966 : INFO : PROGRESS: at sentence #970000, processed 15737605 words, keeping 70296 word types
+2016-11-29 22:05:35,019 : INFO : PROGRESS: at sentence #980000, processed 15895638 words, keeping 70505 word types
+2016-11-29 22:05:35,094 : INFO : PROGRESS: at sentence #990000, processed 16058462 words, keeping 70874 word types
+2016-11-29 22:05:35,150 : INFO : PROGRESS: at sentence #1000000, processed 16219005 words, keeping 71013 word types
+2016-11-29 22:05:35,220 : INFO : PROGRESS: at sentence #1010000, processed 16383036 words, keeping 71400 word types
+2016-11-29 22:05:35,288 : INFO : PROGRESS: at sentence #1020000, processed 16577581 words, keeping 71604 word types
+2016-11-29 22:05:35,343 : INFO : PROGRESS: at sentence #1030000, processed 16747920 words, keeping 71777 word types
+2016-11-29 22:05:35,412 : INFO : PROGRESS: at sentence #1040000, processed 16918066 words, keeping 71942 word types
+2016-11-29 22:05:35,469 : INFO : PROGRESS: at sentence #1050000, processed 17076861 words, keeping 72257 word types
+2016-11-29 22:05:35,534 : INFO : PROGRESS: at sentence #1060000, processed 17229888 words, keeping 72395 word types
+2016-11-29 22:05:35,597 : INFO : PROGRESS: at sentence #1070000, processed 17390441 words, keeping 72661 word types
+2016-11-29 22:05:35,656 : INFO : PROGRESS: at sentence #1080000, processed 17558493 words, keeping 72866 word types
+2016-11-29 22:05:35,721 : INFO : PROGRESS: at sentence #1090000, processed 17715910 words, keeping 73246 word types
+2016-11-29 22:05:35,774 : INFO : PROGRESS: at sentence #1100000, processed 17875115 words, keeping 73599 word types
+2016-11-29 22:05:35,845 : INFO : PROGRESS: at sentence #1110000, processed 18040043 words, keeping 73952 word types
+2016-11-29 22:05:35,910 : INFO : PROGRESS: at sentence #1120000, processed 18198519 words, keeping 74277 word types
+2016-11-29 22:05:35,969 : INFO : PROGRESS: at sentence #1130000, processed 18360987 words, keeping 74600 word types
+2016-11-29 22:05:36,039 : INFO : PROGRESS: at sentence #1140000, processed 18521917 words, keeping 74963 word types
+2016-11-29 22:05:36,102 : INFO : PROGRESS: at sentence #1150000, processed 18684802 words, keeping 75226 word types
+2016-11-29 22:05:36,167 : INFO : PROGRESS: at sentence #1160000, processed 18847163 words, keeping 75541 word types
+2016-11-29 22:05:36,219 : INFO : PROGRESS: at sentence #1170000, processed 19005099 words, keeping 75888 word types
+2016-11-29 22:05:36,283 : INFO : PROGRESS: at sentence #1180000, processed 19168066 words, keeping 76181 word types
+2016-11-29 22:05:36,338 : INFO : PROGRESS: at sentence #1190000, processed 19330830 words, keeping 76627 word types
+2016-11-29 22:05:36,394 : INFO : PROGRESS: at sentence #1200000, processed 19489307 words, keeping 76865 word types
+2016-11-29 22:05:36,449 : INFO : PROGRESS: at sentence #1210000, processed 19651401 words, keeping 77162 word types
+2016-11-29 22:05:36,502 : INFO : PROGRESS: at sentence #1220000, processed 19809331 words, keeping 77545 word types
+2016-11-29 22:05:36,563 : INFO : PROGRESS: at sentence #1230000, processed 19969411 words, keeping 77954 word types
+2016-11-29 22:05:36,622 : INFO : PROGRESS: at sentence #1240000, processed 20128485 words, keeping 78238 word types
+2016-11-29 22:05:36,678 : INFO : PROGRESS: at sentence #1250000, processed 20286688 words, keeping 78447 word types
+2016-11-29 22:05:36,739 : INFO : PROGRESS: at sentence #1260000, processed 20450422 words, keeping 78777 word types
+2016-11-29 22:05:36,795 : INFO : PROGRESS: at sentence #1270000, processed 20615492 words, keeping 79114 word types
+2016-11-29 22:05:36,808 : INFO : collected 79173 word types from a corpus of 20644316 raw words and 1271906 sentences
+2016-11-29 22:05:36,891 : INFO : min_count=40 retains 10821 unique words (drops 68352)
+2016-11-29 22:05:36,892 : INFO : min_count leaves 20305171 word corpus (98% of original 20644316)
+2016-11-29 22:05:36,931 : INFO : deleting the raw counts dictionary of 79173 items
+2016-11-29 22:05:36,938 : INFO : sample=0.001 downsamples 55 most-common words
+2016-11-29 22:05:36,940 : INFO : downsampling leaves estimated 14845841 word corpus (73.1% of prior 20305171)
+2016-11-29 22:05:36,941 : INFO : estimated required memory for 10821 words and 300 dimensions: 31380900 bytes
+2016-11-29 22:05:37,009 : INFO : resetting layer weights
+2016-11-29 22:05:37,213 : INFO : training model with 2 workers on 10821 vocabulary and 300 features, using sg=0 hs=0 sample=0.001 negative=5
+2016-11-29 22:05:37,214 : INFO : expecting 1271906 sentences, matching count from corpus used for vocabulary survey
+2016-11-29 22:05:38,365 : INFO : PROGRESS: at 0.13% examples, 96066 words/s, in_qsize 2, out_qsize 1
+2016-11-29 22:05:39,396 : INFO : PROGRESS: at 0.22% examples, 83852 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:40,437 : INFO : PROGRESS: at 0.30% examples, 79486 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:41,600 : INFO : PROGRESS: at 0.42% examples, 77834 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:42,742 : INFO : PROGRESS: at 0.54% examples, 77117 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:43,748 : INFO : PROGRESS: at 0.65% examples, 77225 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:44,822 : INFO : PROGRESS: at 0.75% examples, 76448 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:45,883 : INFO : PROGRESS: at 0.86% examples, 76156 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:46,943 : INFO : PROGRESS: at 0.97% examples, 75860 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:48,002 : INFO : PROGRESS: at 1.07% examples, 75620 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:49,014 : INFO : PROGRESS: at 1.24% examples, 78750 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:50,146 : INFO : PROGRESS: at 1.34% examples, 77983 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:51,192 : INFO : PROGRESS: at 1.44% examples, 77786 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:52,305 : INFO : PROGRESS: at 1.55% examples, 77361 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:53,314 : INFO : PROGRESS: at 1.64% examples, 77034 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:54,364 : INFO : PROGRESS: at 1.74% examples, 76911 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:55,457 : INFO : PROGRESS: at 1.84% examples, 76619 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:56,523 : INFO : PROGRESS: at 1.95% examples, 76446 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:57,524 : INFO : PROGRESS: at 2.04% examples, 76234 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:05:58,530 : INFO : PROGRESS: at 2.13% examples, 76050 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:05:59,588 : INFO : PROGRESS: at 2.24% examples, 75989 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:00,718 : INFO : PROGRESS: at 2.34% examples, 75697 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:01,728 : INFO : PROGRESS: at 2.43% examples, 75573 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:02,881 : INFO : PROGRESS: at 2.56% examples, 75506 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:03,882 : INFO : PROGRESS: at 2.66% examples, 75623 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:05,013 : INFO : PROGRESS: at 2.77% examples, 75339 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:06,051 : INFO : PROGRESS: at 2.87% examples, 75347 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:07,069 : INFO : PROGRESS: at 2.96% examples, 75229 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:08,203 : INFO : PROGRESS: at 3.06% examples, 75032 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:09,249 : INFO : PROGRESS: at 3.16% examples, 75061 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:10,314 : INFO : PROGRESS: at 3.27% examples, 75006 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:11,393 : INFO : PROGRESS: at 3.38% examples, 74966 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:12,409 : INFO : PROGRESS: at 3.48% examples, 74819 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:13,422 : INFO : PROGRESS: at 3.59% examples, 74918 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:14,540 : INFO : PROGRESS: at 3.69% examples, 74768 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:15,559 : INFO : PROGRESS: at 3.83% examples, 75368 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:16,577 : INFO : PROGRESS: at 4.01% examples, 76699 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:17,613 : INFO : PROGRESS: at 4.19% examples, 77949 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:18,649 : INFO : PROGRESS: at 4.36% examples, 78948 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:19,761 : INFO : PROGRESS: at 4.47% examples, 78727 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:20,930 : INFO : PROGRESS: at 4.58% examples, 78577 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:22,120 : INFO : PROGRESS: at 4.70% examples, 78420 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:23,315 : INFO : PROGRESS: at 4.82% examples, 78264 words/s, in_qsize 3, out_qsize 0
+2016-11-29 22:06:24,336 : INFO : PROGRESS: at 4.96% examples, 78700 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:25,378 : INFO : PROGRESS: at 5.07% examples, 78631 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:26,483 : INFO : PROGRESS: at 5.18% examples, 78476 words/s, in_qsize 4, out_qsize 0
+2016-11-29 22:06:27,558 : INFO : PROGRESS: at 5.32% examples, 78840 words/s, in_qsize 3, out_qsize 0
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     </div>
   </div>
