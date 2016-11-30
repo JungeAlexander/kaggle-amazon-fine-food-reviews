@@ -11776,12 +11776,16 @@ review content.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">nltk</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">gensim.models</span> <span class="k">import</span> <span class="n">Word2Vec</span><span class="p">,</span> <span class="n">word2vec</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="k">import</span> <span class="n">stopwords</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="c1">#from sklearn import</span>
@@ -11797,10 +11801,11 @@ review content.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 </pre></div>
 
 </div>
@@ -11810,7 +11815,7 @@ review content.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the punkt tokenizer used for splitting reviews into sentences</span>
@@ -11834,7 +11839,7 @@ review content.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;../input/database.sqlite&#39;</span><span class="p">)</span>
@@ -11848,7 +11853,7 @@ review content.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="s1">&#39;Score&#39;</span><span class="p">)</span>
@@ -11862,11 +11867,11 @@ review content.</p>
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f2fc865e5f8&gt;]], dtype=object)</pre>
+<pre>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f3f2df2fcc0&gt;]], dtype=object)</pre>
 </div>
 
 </div>
@@ -12111,7 +12116,7 @@ iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">reviews</span><span class="p">[</span><span class="s1">&#39;Score&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span>
@@ -12124,7 +12129,7 @@ iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -12138,7 +12143,7 @@ iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -12212,7 +12217,7 @@ iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reviews</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;ProductId&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -12225,7 +12230,7 @@ iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">reviews</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
@@ -12240,7 +12245,7 @@ iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_remove</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">[</span><span class="s1">&#39;ProductId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;ProductId&#39;</span><span class="p">]),</span>
@@ -12255,7 +12260,7 @@ iSRJaoz/H1e893usaD9ZAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training set contains </span><span class="si">{:d}</span><span class="s1"> reviews.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">)))</span>
@@ -12284,7 +12289,7 @@ Test set contains 151198 reviews (111709 removed).
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">n_pos_train</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
@@ -12337,7 +12342,7 @@ coverted to lower case.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">review_to_wordlist</span><span class="p">(</span> <span class="n">review</span><span class="p">,</span> <span class="n">remove_stopwords</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
@@ -12365,7 +12370,7 @@ coverted to lower case.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">review_to_sentences</span><span class="p">(</span> <span class="n">review</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">remove_stopwords</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
@@ -12393,7 +12398,7 @@ coverted to lower case.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_sentences</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Initialize an empty list of sentences</span>
@@ -12411,7 +12416,7 @@ coverted to lower case.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 262907/262907 [01:30&lt;00:00, 2910.75it/s]
+<pre>100%|██████████| 262907/262907 [01:14&lt;00:00, 3546.57it/s]
 </pre>
 </div>
 </div>
@@ -12422,7 +12427,7 @@ coverted to lower case.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_sentences</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -12436,7 +12441,7 @@ coverted to lower case.</p>
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -12463,47 +12468,38 @@ coverted to lower case.</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="TODO">TODO<a class="anchor-link" href="#TODO">&#182;</a></h1><ul>
-<li>train word embedding</li>
-<li>Look at a couple of examples</li>
-<li>classify</li>
-</ul>
-
+<h2 id="Training-a-word2vec-model">Training a word2vec model<a class="anchor-link" href="#Training-a-word2vec-model">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Import the built-in logging module and configure it so that Word2Vec </span>
-<span class="c1"># creates nice output messages</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> : </span><span class="si">%(levelname)s</span><span class="s1"> : </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>\
-    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;train_model&#39;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_name</span><span class="p">):</span> 
+    <span class="c1"># Set values for various parameters</span>
+    <span class="n">num_features</span> <span class="o">=</span> <span class="mi">300</span>    <span class="c1"># Word vector dimensionality                      </span>
+    <span class="n">min_word_count</span> <span class="o">=</span> <span class="mi">40</span>   <span class="c1"># Minimum word count                        </span>
+    <span class="n">num_workers</span> <span class="o">=</span> <span class="mi">3</span>       <span class="c1"># Number of threads to run in parallel</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="mi">10</span>          <span class="c1"># Context window size                                                                                    </span>
+    <span class="n">downsampling</span> <span class="o">=</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">3</span>   <span class="c1"># Downsample setting for frequent words</span>
 
-<span class="c1"># Set values for various parameters</span>
-<span class="n">num_features</span> <span class="o">=</span> <span class="mi">300</span>    <span class="c1"># Word vector dimensionality                      </span>
-<span class="n">min_word_count</span> <span class="o">=</span> <span class="mi">40</span>   <span class="c1"># Minimum word count                        </span>
-<span class="n">num_workers</span> <span class="o">=</span> <span class="mi">2</span>       <span class="c1"># Number of threads to run in parallel</span>
-<span class="n">context</span> <span class="o">=</span> <span class="mi">10</span>          <span class="c1"># Context window size                                                                                    </span>
-<span class="n">downsampling</span> <span class="o">=</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">3</span>   <span class="c1"># Downsample setting for frequent words</span>
+    <span class="c1"># Initialize and train the model (this will take some time)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">word2vec</span><span class="o">.</span><span class="n">Word2Vec</span><span class="p">(</span><span class="n">train_sentences</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> \
+                <span class="n">size</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">min_count</span> <span class="o">=</span> <span class="n">min_word_count</span><span class="p">,</span> \
+                <span class="n">window</span> <span class="o">=</span> <span class="n">context</span><span class="p">,</span> <span class="n">sample</span> <span class="o">=</span> <span class="n">downsampling</span><span class="p">)</span>
 
-<span class="c1"># Initialize and train the model (this will take some time)</span>
-<span class="kn">from</span> <span class="nn">gensim.models</span> <span class="k">import</span> <span class="n">word2vec</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">word2vec</span><span class="o">.</span><span class="n">Word2Vec</span><span class="p">(</span><span class="n">train_sentences</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> \
-            <span class="n">size</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span> <span class="n">min_count</span> <span class="o">=</span> <span class="n">min_word_count</span><span class="p">,</span> \
-            <span class="n">window</span> <span class="o">=</span> <span class="n">context</span><span class="p">,</span> <span class="n">sample</span> <span class="o">=</span> <span class="n">downsampling</span><span class="p">)</span>
+    <span class="c1"># If you don&#39;t plan to train the model any further, calling </span>
+    <span class="c1"># init_sims will make the model much more memory-efficient.</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">init_sims</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1"># If you don&#39;t plan to train the model any further, calling </span>
-<span class="c1"># init_sims will make the model much more memory-efficient.</span>
-<span class="n">model</span><span class="o">.</span><span class="n">init_sims</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># It can be helpful to create a meaningful model name and </span>
-<span class="c1"># save the model for later use. You can load it later using Word2Vec.load()</span>
-<span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;train_model&quot;</span>
-<span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+    <span class="c1"># It can be helpful to create a meaningful model name and </span>
+    <span class="c1"># save the model for later use. You can load it later using Word2Vec.load()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Word2Vec</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12516,215 +12512,208 @@ coverted to lower case.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>2016-11-29 22:05:28,655 : INFO : Pattern library is not installed, lemmatization won&#39;t be available.
-2016-11-29 22:05:28,691 : INFO : Could not import Theano, will use standard float for default ShardedCorpus dtype.
-2016-11-29 22:05:28,924 : INFO : &#39;pattern&#39; package not found; tag filters are not available for English
-2016-11-29 22:05:28,943 : INFO : collecting all words and their counts
-2016-11-29 22:05:28,945 : INFO : PROGRESS: at sentence #0, processed 0 words, keeping 0 word types
-2016-11-29 22:05:29,003 : INFO : PROGRESS: at sentence #10000, processed 180428 words, keeping 8069 word types
-2016-11-29 22:05:29,062 : INFO : PROGRESS: at sentence #20000, processed 359188 words, keeping 11891 word types
-2016-11-29 22:05:29,120 : INFO : PROGRESS: at sentence #30000, processed 524070 words, keeping 15515 word types
+<pre>INFO:root:Loading previously computed word2vec model from train_model.
+INFO:gensim.utils:loading Word2Vec object from train_model
+INFO:gensim.utils:setting ignored attribute syn0norm to None
+INFO:gensim.utils:setting ignored attribute cum_table to None
 </pre>
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Training model...
-</pre>
 </div>
 </div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">doesnt_match</span><span class="p">(</span><span class="s2">&quot;banana apple orange sausage&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[31]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;sausage&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">doesnt_match</span><span class="p">(</span><span class="s2">&quot;vanilla chocolate cinnamon dish&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[30]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;dish&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">most_similar</span><span class="p">(</span><span class="s2">&quot;great&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;fantastic&#39;, 0.7974022030830383),
+ (&#39;terrific&#39;, 0.778639554977417),
+ (&#39;wonderful&#39;, 0.7695246934890747),
+ (&#39;fabulous&#39;, 0.7191793918609619),
+ (&#39;good&#39;, 0.7056754231452942),
+ (&#39;awesome&#39;, 0.6772215366363525),
+ (&#39;excellent&#39;, 0.6546066999435425),
+ (&#39;perfect&#39;, 0.635776162147522),
+ (&#39;superb&#39;, 0.6311653852462769),
+ (&#39;phenomenal&#39;, 0.6143761277198792)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> <span class="n">model</span><span class="o">.</span><span class="n">most_similar</span><span class="p">(</span><span class="s2">&quot;awful&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>2016-11-29 22:05:29,177 : INFO : PROGRESS: at sentence #40000, processed 680380 words, keeping 17879 word types
-2016-11-29 22:05:29,235 : INFO : PROGRESS: at sentence #50000, processed 842552 words, keeping 20707 word types
-2016-11-29 22:05:29,294 : INFO : PROGRESS: at sentence #60000, processed 1004577 words, keeping 22649 word types
-2016-11-29 22:05:29,352 : INFO : PROGRESS: at sentence #70000, processed 1167004 words, keeping 24754 word types
-2016-11-29 22:05:29,406 : INFO : PROGRESS: at sentence #80000, processed 1320862 words, keeping 25385 word types
-2016-11-29 22:05:29,470 : INFO : PROGRESS: at sentence #90000, processed 1490399 words, keeping 26728 word types
-2016-11-29 22:05:29,537 : INFO : PROGRESS: at sentence #100000, processed 1652964 words, keeping 27605 word types
-2016-11-29 22:05:29,594 : INFO : PROGRESS: at sentence #110000, processed 1820823 words, keeping 28651 word types
-2016-11-29 22:05:29,656 : INFO : PROGRESS: at sentence #120000, processed 1995726 words, keeping 30232 word types
-2016-11-29 22:05:29,713 : INFO : PROGRESS: at sentence #130000, processed 2162244 words, keeping 31400 word types
-2016-11-29 22:05:29,771 : INFO : PROGRESS: at sentence #140000, processed 2330605 words, keeping 32324 word types
-2016-11-29 22:05:29,829 : INFO : PROGRESS: at sentence #150000, processed 2497196 words, keeping 33059 word types
-2016-11-29 22:05:29,880 : INFO : PROGRESS: at sentence #160000, processed 2657117 words, keeping 33871 word types
-2016-11-29 22:05:29,936 : INFO : PROGRESS: at sentence #170000, processed 2816870 words, keeping 34759 word types
-2016-11-29 22:05:29,998 : INFO : PROGRESS: at sentence #180000, processed 2981871 words, keeping 35634 word types
-2016-11-29 22:05:30,062 : INFO : PROGRESS: at sentence #190000, processed 3159640 words, keeping 36318 word types
-2016-11-29 22:05:30,129 : INFO : PROGRESS: at sentence #200000, processed 3328868 words, keeping 37267 word types
-2016-11-29 22:05:30,187 : INFO : PROGRESS: at sentence #210000, processed 3487336 words, keeping 37910 word types
-2016-11-29 22:05:30,243 : INFO : PROGRESS: at sentence #220000, processed 3645618 words, keeping 38757 word types
-2016-11-29 22:05:30,300 : INFO : PROGRESS: at sentence #230000, processed 3804465 words, keeping 39479 word types
-2016-11-29 22:05:30,354 : INFO : PROGRESS: at sentence #240000, processed 3965130 words, keeping 39655 word types
-2016-11-29 22:05:30,412 : INFO : PROGRESS: at sentence #250000, processed 4124553 words, keeping 39661 word types
-2016-11-29 22:05:30,481 : INFO : PROGRESS: at sentence #260000, processed 4284220 words, keeping 40104 word types
-2016-11-29 22:05:30,577 : INFO : PROGRESS: at sentence #270000, processed 4442962 words, keeping 40692 word types
-2016-11-29 22:05:30,678 : INFO : PROGRESS: at sentence #280000, processed 4599727 words, keeping 41115 word types
-2016-11-29 22:05:30,790 : INFO : PROGRESS: at sentence #290000, processed 4760344 words, keeping 41816 word types
-2016-11-29 22:05:30,876 : INFO : PROGRESS: at sentence #300000, processed 4922629 words, keeping 42359 word types
-2016-11-29 22:05:30,939 : INFO : PROGRESS: at sentence #310000, processed 5079635 words, keeping 42906 word types
-2016-11-29 22:05:30,997 : INFO : PROGRESS: at sentence #320000, processed 5237498 words, keeping 43677 word types
-2016-11-29 22:05:31,054 : INFO : PROGRESS: at sentence #330000, processed 5394753 words, keeping 44185 word types
-2016-11-29 22:05:31,114 : INFO : PROGRESS: at sentence #340000, processed 5552023 words, keeping 44461 word types
-2016-11-29 22:05:31,173 : INFO : PROGRESS: at sentence #350000, processed 5703169 words, keeping 44888 word types
-2016-11-29 22:05:31,221 : INFO : PROGRESS: at sentence #360000, processed 5853108 words, keeping 45369 word types
-2016-11-29 22:05:31,279 : INFO : PROGRESS: at sentence #370000, processed 6010727 words, keeping 46014 word types
-2016-11-29 22:05:31,338 : INFO : PROGRESS: at sentence #380000, processed 6172789 words, keeping 46661 word types
-2016-11-29 22:05:31,398 : INFO : PROGRESS: at sentence #390000, processed 6337696 words, keeping 47259 word types
-2016-11-29 22:05:31,451 : INFO : PROGRESS: at sentence #400000, processed 6494452 words, keeping 47666 word types
-2016-11-29 22:05:31,515 : INFO : PROGRESS: at sentence #410000, processed 6652355 words, keeping 48283 word types
-2016-11-29 22:05:31,575 : INFO : PROGRESS: at sentence #420000, processed 6815199 words, keeping 48806 word types
-2016-11-29 22:05:31,626 : INFO : PROGRESS: at sentence #430000, processed 6971053 words, keeping 49371 word types
-2016-11-29 22:05:31,688 : INFO : PROGRESS: at sentence #440000, processed 7125020 words, keeping 49626 word types
-2016-11-29 22:05:31,744 : INFO : PROGRESS: at sentence #450000, processed 7279040 words, keeping 50019 word types
-2016-11-29 22:05:31,805 : INFO : PROGRESS: at sentence #460000, processed 7431507 words, keeping 50333 word types
-2016-11-29 22:05:31,864 : INFO : PROGRESS: at sentence #470000, processed 7587748 words, keeping 50771 word types
-2016-11-29 22:05:31,921 : INFO : PROGRESS: at sentence #480000, processed 7747819 words, keeping 51246 word types
-2016-11-29 22:05:31,984 : INFO : PROGRESS: at sentence #490000, processed 7909136 words, keeping 51499 word types
-2016-11-29 22:05:32,046 : INFO : PROGRESS: at sentence #500000, processed 8067395 words, keeping 51968 word types
-2016-11-29 22:05:32,104 : INFO : PROGRESS: at sentence #510000, processed 8223527 words, keeping 52403 word types
-2016-11-29 22:05:32,155 : INFO : PROGRESS: at sentence #520000, processed 8378958 words, keeping 52829 word types
-2016-11-29 22:05:32,225 : INFO : PROGRESS: at sentence #530000, processed 8537773 words, keeping 53394 word types
-2016-11-29 22:05:32,282 : INFO : PROGRESS: at sentence #540000, processed 8690398 words, keeping 53779 word types
-2016-11-29 22:05:32,334 : INFO : PROGRESS: at sentence #550000, processed 8842053 words, keeping 54215 word types
-2016-11-29 22:05:32,394 : INFO : PROGRESS: at sentence #560000, processed 9004279 words, keeping 54913 word types
-2016-11-29 22:05:32,451 : INFO : PROGRESS: at sentence #570000, processed 9164023 words, keeping 55335 word types
-2016-11-29 22:05:32,517 : INFO : PROGRESS: at sentence #580000, processed 9330192 words, keeping 55887 word types
-2016-11-29 22:05:32,580 : INFO : PROGRESS: at sentence #590000, processed 9494137 words, keeping 56239 word types
-2016-11-29 22:05:32,634 : INFO : PROGRESS: at sentence #600000, processed 9652921 words, keeping 56548 word types
-2016-11-29 22:05:32,697 : INFO : PROGRESS: at sentence #610000, processed 9809724 words, keeping 56887 word types
-2016-11-29 22:05:32,759 : INFO : PROGRESS: at sentence #620000, processed 9969697 words, keeping 57308 word types
-2016-11-29 22:05:32,811 : INFO : PROGRESS: at sentence #630000, processed 10131795 words, keeping 57999 word types
-2016-11-29 22:05:32,876 : INFO : PROGRESS: at sentence #640000, processed 10295238 words, keeping 58537 word types
-2016-11-29 22:05:32,937 : INFO : PROGRESS: at sentence #650000, processed 10455800 words, keeping 59002 word types
-2016-11-29 22:05:32,998 : INFO : PROGRESS: at sentence #660000, processed 10612501 words, keeping 59491 word types
-2016-11-29 22:05:33,053 : INFO : PROGRESS: at sentence #670000, processed 10767283 words, keeping 60005 word types
-2016-11-29 22:05:33,120 : INFO : PROGRESS: at sentence #680000, processed 10933050 words, keeping 60534 word types
-2016-11-29 22:05:33,173 : INFO : PROGRESS: at sentence #690000, processed 11091575 words, keeping 60917 word types
-2016-11-29 22:05:33,239 : INFO : PROGRESS: at sentence #700000, processed 11251827 words, keeping 61285 word types
-2016-11-29 22:05:33,294 : INFO : PROGRESS: at sentence #710000, processed 11412990 words, keeping 61519 word types
-2016-11-29 22:05:33,354 : INFO : PROGRESS: at sentence #720000, processed 11568608 words, keeping 61975 word types
-2016-11-29 22:05:33,412 : INFO : PROGRESS: at sentence #730000, processed 11729893 words, keeping 62473 word types
-2016-11-29 22:05:33,478 : INFO : PROGRESS: at sentence #740000, processed 11888227 words, keeping 62950 word types
-2016-11-29 22:05:33,538 : INFO : PROGRESS: at sentence #750000, processed 12045035 words, keeping 63372 word types
-2016-11-29 22:05:33,604 : INFO : PROGRESS: at sentence #760000, processed 12207760 words, keeping 63731 word types
-2016-11-29 22:05:33,670 : INFO : PROGRESS: at sentence #770000, processed 12367459 words, keeping 64261 word types
-2016-11-29 22:05:33,734 : INFO : PROGRESS: at sentence #780000, processed 12540406 words, keeping 64548 word types
-2016-11-29 22:05:33,803 : INFO : PROGRESS: at sentence #790000, processed 12714651 words, keeping 64963 word types
-2016-11-29 22:05:33,870 : INFO : PROGRESS: at sentence #800000, processed 12909315 words, keeping 65190 word types
-2016-11-29 22:05:33,941 : INFO : PROGRESS: at sentence #810000, processed 13102866 words, keeping 65307 word types
-2016-11-29 22:05:34,001 : INFO : PROGRESS: at sentence #820000, processed 13265784 words, keeping 65637 word types
-2016-11-29 22:05:34,063 : INFO : PROGRESS: at sentence #830000, processed 13425109 words, keeping 66033 word types
-2016-11-29 22:05:34,114 : INFO : PROGRESS: at sentence #840000, processed 13583257 words, keeping 66253 word types
-2016-11-29 22:05:34,192 : INFO : PROGRESS: at sentence #850000, processed 13750179 words, keeping 66673 word types
-2016-11-29 22:05:34,251 : INFO : PROGRESS: at sentence #860000, processed 13912689 words, keeping 66960 word types
-2016-11-29 22:05:34,315 : INFO : PROGRESS: at sentence #870000, processed 14080276 words, keeping 67276 word types
-2016-11-29 22:05:34,377 : INFO : PROGRESS: at sentence #880000, processed 14253592 words, keeping 67585 word types
-2016-11-29 22:05:34,441 : INFO : PROGRESS: at sentence #890000, processed 14425242 words, keeping 67695 word types
-2016-11-29 22:05:34,507 : INFO : PROGRESS: at sentence #900000, processed 14584406 words, keeping 67902 word types
-2016-11-29 22:05:34,570 : INFO : PROGRESS: at sentence #910000, processed 14752165 words, keeping 68090 word types
-2016-11-29 22:05:34,641 : INFO : PROGRESS: at sentence #920000, processed 14922356 words, keeping 68452 word types
-2016-11-29 22:05:34,696 : INFO : PROGRESS: at sentence #930000, processed 15078725 words, keeping 68823 word types
-2016-11-29 22:05:34,767 : INFO : PROGRESS: at sentence #940000, processed 15234489 words, keeping 69234 word types
-2016-11-29 22:05:34,836 : INFO : PROGRESS: at sentence #950000, processed 15397711 words, keeping 69630 word types
-2016-11-29 22:05:34,892 : INFO : PROGRESS: at sentence #960000, processed 15555781 words, keeping 70069 word types
-2016-11-29 22:05:34,966 : INFO : PROGRESS: at sentence #970000, processed 15737605 words, keeping 70296 word types
-2016-11-29 22:05:35,019 : INFO : PROGRESS: at sentence #980000, processed 15895638 words, keeping 70505 word types
-2016-11-29 22:05:35,094 : INFO : PROGRESS: at sentence #990000, processed 16058462 words, keeping 70874 word types
-2016-11-29 22:05:35,150 : INFO : PROGRESS: at sentence #1000000, processed 16219005 words, keeping 71013 word types
-2016-11-29 22:05:35,220 : INFO : PROGRESS: at sentence #1010000, processed 16383036 words, keeping 71400 word types
-2016-11-29 22:05:35,288 : INFO : PROGRESS: at sentence #1020000, processed 16577581 words, keeping 71604 word types
-2016-11-29 22:05:35,343 : INFO : PROGRESS: at sentence #1030000, processed 16747920 words, keeping 71777 word types
-2016-11-29 22:05:35,412 : INFO : PROGRESS: at sentence #1040000, processed 16918066 words, keeping 71942 word types
-2016-11-29 22:05:35,469 : INFO : PROGRESS: at sentence #1050000, processed 17076861 words, keeping 72257 word types
-2016-11-29 22:05:35,534 : INFO : PROGRESS: at sentence #1060000, processed 17229888 words, keeping 72395 word types
-2016-11-29 22:05:35,597 : INFO : PROGRESS: at sentence #1070000, processed 17390441 words, keeping 72661 word types
-2016-11-29 22:05:35,656 : INFO : PROGRESS: at sentence #1080000, processed 17558493 words, keeping 72866 word types
-2016-11-29 22:05:35,721 : INFO : PROGRESS: at sentence #1090000, processed 17715910 words, keeping 73246 word types
-2016-11-29 22:05:35,774 : INFO : PROGRESS: at sentence #1100000, processed 17875115 words, keeping 73599 word types
-2016-11-29 22:05:35,845 : INFO : PROGRESS: at sentence #1110000, processed 18040043 words, keeping 73952 word types
-2016-11-29 22:05:35,910 : INFO : PROGRESS: at sentence #1120000, processed 18198519 words, keeping 74277 word types
-2016-11-29 22:05:35,969 : INFO : PROGRESS: at sentence #1130000, processed 18360987 words, keeping 74600 word types
-2016-11-29 22:05:36,039 : INFO : PROGRESS: at sentence #1140000, processed 18521917 words, keeping 74963 word types
-2016-11-29 22:05:36,102 : INFO : PROGRESS: at sentence #1150000, processed 18684802 words, keeping 75226 word types
-2016-11-29 22:05:36,167 : INFO : PROGRESS: at sentence #1160000, processed 18847163 words, keeping 75541 word types
-2016-11-29 22:05:36,219 : INFO : PROGRESS: at sentence #1170000, processed 19005099 words, keeping 75888 word types
-2016-11-29 22:05:36,283 : INFO : PROGRESS: at sentence #1180000, processed 19168066 words, keeping 76181 word types
-2016-11-29 22:05:36,338 : INFO : PROGRESS: at sentence #1190000, processed 19330830 words, keeping 76627 word types
-2016-11-29 22:05:36,394 : INFO : PROGRESS: at sentence #1200000, processed 19489307 words, keeping 76865 word types
-2016-11-29 22:05:36,449 : INFO : PROGRESS: at sentence #1210000, processed 19651401 words, keeping 77162 word types
-2016-11-29 22:05:36,502 : INFO : PROGRESS: at sentence #1220000, processed 19809331 words, keeping 77545 word types
-2016-11-29 22:05:36,563 : INFO : PROGRESS: at sentence #1230000, processed 19969411 words, keeping 77954 word types
-2016-11-29 22:05:36,622 : INFO : PROGRESS: at sentence #1240000, processed 20128485 words, keeping 78238 word types
-2016-11-29 22:05:36,678 : INFO : PROGRESS: at sentence #1250000, processed 20286688 words, keeping 78447 word types
-2016-11-29 22:05:36,739 : INFO : PROGRESS: at sentence #1260000, processed 20450422 words, keeping 78777 word types
-2016-11-29 22:05:36,795 : INFO : PROGRESS: at sentence #1270000, processed 20615492 words, keeping 79114 word types
-2016-11-29 22:05:36,808 : INFO : collected 79173 word types from a corpus of 20644316 raw words and 1271906 sentences
-2016-11-29 22:05:36,891 : INFO : min_count=40 retains 10821 unique words (drops 68352)
-2016-11-29 22:05:36,892 : INFO : min_count leaves 20305171 word corpus (98% of original 20644316)
-2016-11-29 22:05:36,931 : INFO : deleting the raw counts dictionary of 79173 items
-2016-11-29 22:05:36,938 : INFO : sample=0.001 downsamples 55 most-common words
-2016-11-29 22:05:36,940 : INFO : downsampling leaves estimated 14845841 word corpus (73.1% of prior 20305171)
-2016-11-29 22:05:36,941 : INFO : estimated required memory for 10821 words and 300 dimensions: 31380900 bytes
-2016-11-29 22:05:37,009 : INFO : resetting layer weights
-2016-11-29 22:05:37,213 : INFO : training model with 2 workers on 10821 vocabulary and 300 features, using sg=0 hs=0 sample=0.001 negative=5
-2016-11-29 22:05:37,214 : INFO : expecting 1271906 sentences, matching count from corpus used for vocabulary survey
-2016-11-29 22:05:38,365 : INFO : PROGRESS: at 0.13% examples, 96066 words/s, in_qsize 2, out_qsize 1
-2016-11-29 22:05:39,396 : INFO : PROGRESS: at 0.22% examples, 83852 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:40,437 : INFO : PROGRESS: at 0.30% examples, 79486 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:41,600 : INFO : PROGRESS: at 0.42% examples, 77834 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:42,742 : INFO : PROGRESS: at 0.54% examples, 77117 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:43,748 : INFO : PROGRESS: at 0.65% examples, 77225 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:44,822 : INFO : PROGRESS: at 0.75% examples, 76448 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:45,883 : INFO : PROGRESS: at 0.86% examples, 76156 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:46,943 : INFO : PROGRESS: at 0.97% examples, 75860 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:48,002 : INFO : PROGRESS: at 1.07% examples, 75620 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:49,014 : INFO : PROGRESS: at 1.24% examples, 78750 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:50,146 : INFO : PROGRESS: at 1.34% examples, 77983 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:51,192 : INFO : PROGRESS: at 1.44% examples, 77786 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:52,305 : INFO : PROGRESS: at 1.55% examples, 77361 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:53,314 : INFO : PROGRESS: at 1.64% examples, 77034 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:54,364 : INFO : PROGRESS: at 1.74% examples, 76911 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:55,457 : INFO : PROGRESS: at 1.84% examples, 76619 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:56,523 : INFO : PROGRESS: at 1.95% examples, 76446 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:57,524 : INFO : PROGRESS: at 2.04% examples, 76234 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:05:58,530 : INFO : PROGRESS: at 2.13% examples, 76050 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:05:59,588 : INFO : PROGRESS: at 2.24% examples, 75989 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:00,718 : INFO : PROGRESS: at 2.34% examples, 75697 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:01,728 : INFO : PROGRESS: at 2.43% examples, 75573 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:02,881 : INFO : PROGRESS: at 2.56% examples, 75506 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:03,882 : INFO : PROGRESS: at 2.66% examples, 75623 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:05,013 : INFO : PROGRESS: at 2.77% examples, 75339 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:06,051 : INFO : PROGRESS: at 2.87% examples, 75347 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:07,069 : INFO : PROGRESS: at 2.96% examples, 75229 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:08,203 : INFO : PROGRESS: at 3.06% examples, 75032 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:09,249 : INFO : PROGRESS: at 3.16% examples, 75061 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:10,314 : INFO : PROGRESS: at 3.27% examples, 75006 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:11,393 : INFO : PROGRESS: at 3.38% examples, 74966 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:12,409 : INFO : PROGRESS: at 3.48% examples, 74819 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:13,422 : INFO : PROGRESS: at 3.59% examples, 74918 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:14,540 : INFO : PROGRESS: at 3.69% examples, 74768 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:15,559 : INFO : PROGRESS: at 3.83% examples, 75368 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:16,577 : INFO : PROGRESS: at 4.01% examples, 76699 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:17,613 : INFO : PROGRESS: at 4.19% examples, 77949 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:18,649 : INFO : PROGRESS: at 4.36% examples, 78948 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:19,761 : INFO : PROGRESS: at 4.47% examples, 78727 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:20,930 : INFO : PROGRESS: at 4.58% examples, 78577 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:22,120 : INFO : PROGRESS: at 4.70% examples, 78420 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:23,315 : INFO : PROGRESS: at 4.82% examples, 78264 words/s, in_qsize 3, out_qsize 0
-2016-11-29 22:06:24,336 : INFO : PROGRESS: at 4.96% examples, 78700 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:25,378 : INFO : PROGRESS: at 5.07% examples, 78631 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:26,483 : INFO : PROGRESS: at 5.18% examples, 78476 words/s, in_qsize 4, out_qsize 0
-2016-11-29 22:06:27,558 : INFO : PROGRESS: at 5.32% examples, 78840 words/s, in_qsize 3, out_qsize 0
+<pre>INFO:gensim.models.word2vec:precomputing L2-norms of word weight vectors
 </pre>
 </div>
 </div>
 
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;terrible&#39;, 0.7411801815032959),
+ (&#39;horrible&#39;, 0.7315601110458374),
+ (&#39;disgusting&#39;, 0.6701241731643677),
+ (&#39;aweful&#39;, 0.6651712656021118),
+ (&#39;gross&#39;, 0.6525599360466003),
+ (&#39;nasty&#39;, 0.6149296760559082),
+ (&#39;horrid&#39;, 0.5932258367538452),
+ (&#39;dreadful&#39;, 0.5807441473007202),
+ (&#39;amazing&#39;, 0.5632752776145935),
+ (&#39;odd&#39;, 0.556433916091919)]</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Build-classifier-using-word-embedding">Build classifier using word embedding<a class="anchor-link" href="#Build-classifier-using-word-embedding">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">syn0</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(10821, 300)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="TODO">TODO<a class="anchor-link" href="#TODO">&#182;</a></h2><ul>
+<li>classifiers with and without word2 vec</li>
+</ul>
+
+</div>
+</div>
 </div>
     </div>
   </div>
