@@ -11873,7 +11873,7 @@ review content.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f78ecd856d8&gt;]], dtype=object)</pre>
+<pre>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f2ad4a11828&gt;]], dtype=object)</pre>
 </div>
 
 </div>
@@ -12431,7 +12431,7 @@ coverted to lower case.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 262907/262907 [01:08&lt;00:00, 3833.92it/s]
+<pre>100%|██████████| 262907/262907 [01:07&lt;00:00, 3880.46it/s]
 </pre>
 </div>
 </div>
@@ -12791,8 +12791,8 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 262907/262907 [00:49&lt;00:00, 5359.14it/s]
-100%|██████████| 262907/262907 [03:06&lt;00:00, 1410.17it/s]
+<pre>100%|██████████| 262907/262907 [00:48&lt;00:00, 5391.46it/s]
+100%|██████████| 262907/262907 [03:05&lt;00:00, 1414.20it/s]
 </pre>
 </div>
 </div>
@@ -12822,8 +12822,8 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 151198/151198 [00:27&lt;00:00, 5413.43it/s]
-100%|██████████| 151198/151198 [01:47&lt;00:00, 1411.31it/s]
+<pre>100%|██████████| 151198/151198 [00:28&lt;00:00, 5385.48it/s]
+100%|██████████| 151198/151198 [01:46&lt;00:00, 1424.62it/s]
 </pre>
 </div>
 </div>
@@ -12865,7 +12865,7 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># remove instances in test set that could not be represented as feature vectors (if any)</span>
@@ -12898,7 +12898,7 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predicting labels for test data..&quot;</span><span class="p">)</span>
@@ -12926,7 +12926,7 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">],</span> <span class="n">result</span><span class="p">))</span>
@@ -12944,10 +12944,10 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>             precision    recall  f1-score   support
 
-          0       0.85      0.30      0.44     26651
+          0       0.85      0.30      0.45     26651
           1       0.87      0.99      0.92    124546
 
-avg / total       0.86      0.87      0.84    151197
+avg / total       0.87      0.87      0.84    151197
 
 </pre>
 </div>

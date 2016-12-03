@@ -293,7 +293,7 @@ print("Fitting a random forest to labeled training data...")
 forest = forest.fit(trainDataVecs, train_reviews['Class'])
 
 
-# In[32]:
+# In[29]:
 
 # remove instances in test set that could not be represented as feature vectors (if any)
 nan_indices = list({x for x,y in np.argwhere(np.isnan(testDataVecs))})
@@ -304,13 +304,13 @@ if len(nan_indices) > 0:
     assert testDataVecs.shape[0] == len(test_reviews)
 
 
-# In[36]:
+# In[30]:
 
 print("Predicting labels for test data..")
 result = forest.predict(testDataVecs)
 
 
-# In[39]:
+# In[31]:
 
 print(classification_report(test_reviews['Class'], result))
 
