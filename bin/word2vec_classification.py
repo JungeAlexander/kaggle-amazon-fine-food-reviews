@@ -19,7 +19,7 @@
 # - https://www.kaggle.com/gpayen/d/snap/amazon-fine-food-reviews/building-a-prediction-model/notebook
 # - https://www.kaggle.com/inspector/d/snap/amazon-fine-food-reviews/word2vec-logistic-regression-0-88-auc/notebook
 
-# In[1]:
+# In[32]:
 
 from gensim.models import Word2Vec, word2vec
 import logging
@@ -32,7 +32,9 @@ import os
 import pandas as pd
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, roc_auc_score, roc_curve
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
+from sklearn.pipeline import Pipeline
 import sqlite3
 import re
 from tqdm import tqdm
@@ -356,3 +358,49 @@ plt.show()
 # - Parameter tuning for word2vec and random forest (using K-fold cross-validation with small K as training lots of embeddings and classifiers is expensive?)
 # - Remove reviews where too few word embeddings were averaged (see the example that had to be removed)?
 # - How would a classifier with tf-idf features (and no word2vec embedding) perform?
+# - Other model: naive bayes (`MultinomialNB`)? SVM (`SGDClassifier`)?
+
+# In[ ]:
+
+from sklearn.naive_bayes import MultinomialNB
+text_clf = Pipeline([('vect', CountVectorizer()),
+                     ('tfidf', TfidfTransformer()),
+                     ('clf', MultinomialNB)])
+
+from sklearn.linear_model import SGDClassifier
+text_clf = Pipeline([('vect', CountVectorizer()),
+                     ('tfidf', TfidfTransformer()),
+                     ('clf', SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=5, random_state=42)])
+                     
+text_clf = Pipeline([('vect', CountVectorizer()),
+                     ('tfidf', TfidfTransformer()),
+                     ('clf', RandomForestClassifier(n_estimators = 100))])
+
+
+# In[25]:
+
+from sklearn.naive_bayes import MultinomialNB
+text_clf = Pipeline([('vect', CountVectorizer()),
+                     ('tfidf', TfidfTransformer()),
+                     ('clf', MultinomialNB()])
+
+
+# In[27]:
+
+_ = text_clf.fit(train_reviews['Text'], train_reviews['Class'])
+
+
+# In[28]:
+
+predicted = text_clf.predict(test_reviews['Text'])
+
+
+# In[29]:
+
+print(classification_report(test_reviews['Class'], predicted))
+
+
+# In[33]:
+
+print(confusion_matrix(test_reviews['Class'], predicted))
+
