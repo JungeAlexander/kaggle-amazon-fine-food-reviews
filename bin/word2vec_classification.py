@@ -360,47 +360,39 @@ plt.show()
 # - How would a classifier with tf-idf features (and no word2vec embedding) perform?
 # - Other model: naive bayes (`MultinomialNB`)? SVM (`SGDClassifier`)?
 
-# In[ ]:
+# In[40]:
 
-from sklearn.naive_bayes import MultinomialNB
-text_clf = Pipeline([('vect', CountVectorizer()),
-                     ('tfidf', TfidfTransformer()),
-                     ('clf', MultinomialNB)])
+# from sklearn.naive_bayes import MultinomialNB
+# text_clf = Pipeline([('vect', CountVectorizer()),
+#                      ('tfidf', TfidfTransformer()),
+#                      ('clf', MultinomialNB)])
 
-from sklearn.linear_model import SGDClassifier
-text_clf = Pipeline([('vect', CountVectorizer()),
-                     ('tfidf', TfidfTransformer()),
-                     ('clf', SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=5, random_state=42)])
+# from sklearn.linear_model import SGDClassifier
+# text_clf = Pipeline([('vect', CountVectorizer()),
+#                      ('tfidf', TfidfTransformer()),
+#                      ('clf', SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=5, random_state=42))])
                      
 text_clf = Pipeline([('vect', CountVectorizer()),
                      ('tfidf', TfidfTransformer()),
                      ('clf', RandomForestClassifier(n_estimators = 100))])
 
 
-# In[25]:
-
-from sklearn.naive_bayes import MultinomialNB
-text_clf = Pipeline([('vect', CountVectorizer()),
-                     ('tfidf', TfidfTransformer()),
-                     ('clf', MultinomialNB()])
-
-
-# In[27]:
+# In[41]:
 
 _ = text_clf.fit(train_reviews['Text'], train_reviews['Class'])
 
 
-# In[28]:
+# In[42]:
 
 predicted = text_clf.predict(test_reviews['Text'])
 
 
-# In[29]:
+# In[43]:
 
 print(classification_report(test_reviews['Class'], predicted))
 
 
-# In[33]:
+# In[44]:
 
 print(confusion_matrix(test_reviews['Class'], predicted))
 
