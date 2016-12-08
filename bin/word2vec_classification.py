@@ -242,9 +242,9 @@ model.most_similar("awful")
 model.most_similar(positive=['woman', 'king'], negative=['man'])
 
 
-# In[59]:
+# In[39]:
 
-model.similar_by_vector(model['meal'] - model['meat'])
+model.similar_by_vector(model['beer'] - model['alcohol'])
 
 
 # ## Build classifier using word embedding
