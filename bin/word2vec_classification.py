@@ -19,7 +19,7 @@
 # - https://www.kaggle.com/gpayen/d/snap/amazon-fine-food-reviews/building-a-prediction-model/notebook
 # - https://www.kaggle.com/inspector/d/snap/amazon-fine-food-reviews/word2vec-logistic-regression-0-88-auc/notebook
 
-# In[32]:
+# In[1]:
 
 from gensim.models import Word2Vec, word2vec
 import logging
@@ -175,7 +175,7 @@ def review_to_sentences(review, tokenizer, remove_stopwords=False):
 # In[16]:
 
 train_sentences = []  # Initialize an empty list of sentences
-for review in tqdm(train_reviews['Text']):
+for review in train_reviews['Text']:
     train_sentences += review_to_sentences(review, tokenizer)
 
 
@@ -237,6 +237,16 @@ model.most_similar("great")
 model.most_similar("awful")
 
 
+# In[24]:
+
+model.most_similar(positive=['woman', 'king'], negative=['man'])
+
+
+# In[59]:
+
+model.similar_by_vector(model['meal'] - model['meat'])
+
+
 # ## Build classifier using word embedding
 # 
 # Inspiration: https://www.kaggle.com/c/word2vec-nlp-tutorial/details/part-3-more-fun-with-word-vectors
@@ -274,7 +284,7 @@ def get_avg_feature_vecs(reviews, model, num_features):
     counter = 0.
     review_feature_vecs = np.zeros((len(reviews),num_features), dtype='float32')  # pre-initialize (for speed)
     
-    for review in tqdm(reviews):
+    for review in reviews:
         review_feature_vecs[counter] = make_feature_vec(review, model, num_features)
         counter = counter + 1.
     return review_feature_vecs
@@ -284,7 +294,7 @@ def get_avg_feature_vecs(reviews, model, num_features):
 
 # calculate average feature vectors for training and test sets
 clean_train_reviews = []
-for review in tqdm(train_reviews['Text']):
+for review in train_reviews['Text']:
     clean_train_reviews.append(review_to_wordlist(review, remove_stopwords=True))
 trainDataVecs = get_avg_feature_vecs(clean_train_reviews, model, num_features)
 
@@ -292,7 +302,7 @@ trainDataVecs = get_avg_feature_vecs(clean_train_reviews, model, num_features)
 # In[27]:
 
 clean_test_reviews = []
-for review in tqdm(test_reviews['Text']):
+for review in test_reviews['Text']:
     clean_test_reviews.append(review_to_wordlist(review, remove_stopwords=True))
 testDataVecs = get_avg_feature_vecs(clean_test_reviews, model, num_features)
 
@@ -359,6 +369,11 @@ plt.show()
 # - Remove reviews where too few word embeddings were averaged (see the example that had to be removed)?
 # - How would a classifier with tf-idf features (and no word2vec embedding) perform?
 # - Other model: naive bayes (`MultinomialNB`)? SVM (`SGDClassifier`)?
+
+# ## Random forest classifier without word2vec
+# 
+# Instead of word2vec-derived features, the classifier below uses as [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)-derived feature matrix as input to a random forest classifier.
+# We see that F1-score is worse for both classes, compared to the word2vec approach.
 
 # In[40]:
 

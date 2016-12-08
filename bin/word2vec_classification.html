@@ -11779,7 +11779,7 @@ These feature vectors are then used in the classfication task.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">gensim.models</span> <span class="k">import</span> <span class="n">Word2Vec</span><span class="p">,</span> <span class="n">word2vec</span>
@@ -11802,6 +11802,21 @@ These feature vectors are then used in the classfication task.</p>
 </pre></div>
 
 </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/home/ajunge/local/anaconda3/envs/kaggle-amazon-fine-food-reviews/lib/python3.5/site-packages/gensim/utils.py:1015: UserWarning: Pattern library is not installed, lemmatization won&#39;t be available.
+  warnings.warn(&#34;Pattern library is not installed, lemmatization won&#39;t be available.&#34;)
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -11879,7 +11894,7 @@ These feature vectors are then used in the classfication task.</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f082e213080&gt;]], dtype=object)</pre>
+<pre>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x7f5b4cdc21d0&gt;]], dtype=object)</pre>
 </div>
 
 </div>
@@ -12423,7 +12438,7 @@ coverted to lower case.</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_sentences</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Initialize an empty list of sentences</span>
-<span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;Text&#39;</span><span class="p">]):</span>
+<span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;Text&#39;</span><span class="p">]:</span>
     <span class="n">train_sentences</span> <span class="o">+=</span> <span class="n">review_to_sentences</span><span class="p">(</span><span class="n">review</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)</span>
 </pre></div>
 
@@ -12437,7 +12452,7 @@ coverted to lower case.</p>
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 262907/262907 [01:13&lt;00:00, 3555.84it/s]
+<pre>100%|██████████| 262907/262907 [01:21&lt;00:00, 3239.46it/s]
 </pre>
 </div>
 </div>
@@ -12535,6 +12550,7 @@ coverted to lower case.</p>
 <pre>INFO:gensim.utils:loading Word2Vec object from train_model
 INFO:gensim.utils:setting ignored attribute syn0norm to None
 INFO:gensim.utils:setting ignored attribute cum_table to None
+INFO:gensim.utils:loaded train_model
 </pre>
 </div>
 </div>
@@ -12707,6 +12723,76 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">most_similar</span><span class="p">(</span><span class="n">positive</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;woman&#39;</span><span class="p">,</span> <span class="s1">&#39;king&#39;</span><span class="p">],</span> <span class="n">negative</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;man&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;charles&#39;, 0.48787277936935425),
+ (&#39;arthur&#39;, 0.4370694160461426),
+ (&#39;cavalier&#39;, 0.4332427978515625),
+ (&#39;george&#39;, 0.41141006350517273),
+ (&#39;uncle&#39;, 0.40545332431793213),
+ (&#39;william&#39;, 0.4018605947494507),
+ (&#39;cocker&#39;, 0.3809300363063812),
+ (&#39;spaniels&#39;, 0.38067492842674255),
+ (&#39;spaniel&#39;, 0.37925082445144653),
+ (&#39;dachshund&#39;, 0.3750506043434143)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[59]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">similar_by_vector</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;meal&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;meat&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-59-f242c9ff5ec1&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>model<span class="ansi-blue-fg">.</span>similar_by_vector<span class="ansi-blue-fg">(</span>model<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#39;meal&#39;</span><span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">-</span> model<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#39;meat&#39;</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;Word2Vec&#39; object has no attribute &#39;similar_by_vector&#39;</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
@@ -12776,7 +12862,7 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
     <span class="n">counter</span> <span class="o">=</span> <span class="mf">0.</span>
     <span class="n">review_feature_vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">reviews</span><span class="p">),</span><span class="n">num_features</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>  <span class="c1"># pre-initialize (for speed)</span>
     
-    <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">reviews</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">reviews</span><span class="p">:</span>
         <span class="n">review_feature_vecs</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_feature_vec</span><span class="p">(</span><span class="n">review</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">num_features</span><span class="p">)</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mf">1.</span>
     <span class="k">return</span> <span class="n">review_feature_vecs</span>
@@ -12794,7 +12880,7 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># calculate average feature vectors for training and test sets</span>
 <span class="n">clean_train_reviews</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;Text&#39;</span><span class="p">]):</span>
+<span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">train_reviews</span><span class="p">[</span><span class="s1">&#39;Text&#39;</span><span class="p">]:</span>
     <span class="n">clean_train_reviews</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">review_to_wordlist</span><span class="p">(</span><span class="n">review</span><span class="p">,</span> <span class="n">remove_stopwords</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="n">trainDataVecs</span> <span class="o">=</span> <span class="n">get_avg_feature_vecs</span><span class="p">(</span><span class="n">clean_train_reviews</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">num_features</span><span class="p">)</span>
 </pre></div>
@@ -12825,7 +12911,7 @@ INFO:gensim.utils:setting ignored attribute cum_table to None
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">clean_test_reviews</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">test_reviews</span><span class="p">[</span><span class="s1">&#39;Text&#39;</span><span class="p">]):</span>
+<span class="k">for</span> <span class="n">review</span> <span class="ow">in</span> <span class="n">test_reviews</span><span class="p">[</span><span class="s1">&#39;Text&#39;</span><span class="p">]:</span>
     <span class="n">clean_test_reviews</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">review_to_wordlist</span><span class="p">(</span><span class="n">review</span><span class="p">,</span> <span class="n">remove_stopwords</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="n">testDataVecs</span> <span class="o">=</span> <span class="n">get_avg_feature_vecs</span><span class="p">(</span><span class="n">clean_test_reviews</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">num_features</span><span class="p">)</span>
 </pre></div>
@@ -13459,6 +13545,17 @@ IiIiift/k5kBR97xcSkAAAAASUVORK5CYII=
 <li>How would a classifier with tf-idf features (and no word2vec embedding) perform?</li>
 <li>Other model: naive bayes (<code>MultinomialNB</code>)? SVM (<code>SGDClassifier</code>)?</li>
 </ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Random-forest-classifier-without-word2vec">Random forest classifier without word2vec<a class="anchor-link" href="#Random-forest-classifier-without-word2vec">&#182;</a></h2><p>Instead of word2vec-derived features, the classifier below uses as <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf">tf-idf</a>-derived feature matrix as input to a random forest classifier.
+We see that F1-score is worse for both classes, compared to the word2vec approach.</p>
 
 </div>
 </div>
